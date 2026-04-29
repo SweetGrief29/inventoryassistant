@@ -23,12 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tazfan.inventoryassistant.ui.viewmodel.InventoryViewModel
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +45,7 @@ fun AddItemScreen(
     var sellingPrice by remember { mutableStateOf("") }
     var stock by remember { mutableStateOf("0") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
     
     var showCategoryDialog by remember { mutableStateOf(false) }
     val categories = listOf("Makanan", "Minuman", "Lainnya")
@@ -117,7 +121,21 @@ fun AddItemScreen(
 
             ModernTextField(label = "Harga Asli", value = costPrice, onValueChange = { costPrice = it }, prefix = "Rp", keyboardType = KeyboardType.Number)
             
-            ModernTextField(label = "Harga Jual", value = sellingPrice, onValueChange = { sellingPrice = it }, prefix = "Rp", keyboardType = KeyboardType.Number)
+            val isLoss = remember(costPrice, sellingPrice) {
+                val cp = costPrice.toDoubleOrNull() ?: 0.0
+                val sp = sellingPrice.toDoubleOrNull() ?: 0.0
+                sp > 0 && sp < cp
+            }
+
+            ModernTextField(
+                label = "Harga Jual", 
+                value = sellingPrice, 
+                onValueChange = { sellingPrice = it }, 
+                prefix = "Rp", 
+                keyboardType = KeyboardType.Number,
+                isError = isLoss,
+                supportingText = if (isLoss) "Peringatan: Harga jual lebih rendah dari harga asli (Rugi)" else null
+            )
             
             ModernTextField(label = "Stok Awal", value = stock, onValueChange = { stock = it }, keyboardType = KeyboardType.Number)
 
@@ -126,13 +144,31 @@ fun AddItemScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
+                        var finalImagePath: String? = null
+                        
+                        imageUri?.let { uri ->
+                            try {
+                                val inputStream = context.contentResolver.openInputStream(uri)
+                                val file = File(context.filesDir, "item_${System.currentTimeMillis()}.jpg")
+                                val outputStream = FileOutputStream(file)
+                                inputStream?.use { input ->
+                                    outputStream.use { output ->
+                                        input.copyTo(output)
+                                    }
+                                }
+                                finalImagePath = file.absolutePath
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+
                         viewModel.insertItem(
                             name = name,
                             category = category,
                             costPrice = costPrice.toDoubleOrNull() ?: 0.0,
                             sellingPrice = sellingPrice.toDoubleOrNull() ?: 0.0,
                             stock = stock.toIntOrNull() ?: 0,
-                            imagePath = imageUri?.toString()
+                            imagePath = finalImagePath
                         )
                         onNavigateBack()
                     }
@@ -198,13 +234,23 @@ fun InputRowItem(label: String, value: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun ModernTextField(label: String, value: String, onValueChange: (String) -> Unit, prefix: String? = null, keyboardType: KeyboardType = KeyboardType.Text) {
+fun ModernTextField(
+    label: String, 
+    value: String, 
+    onValueChange: (String) -> Unit, 
+    prefix: String? = null, 
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isError: Boolean = false,
+    supportingText: String? = null
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
         prefix = prefix?.let { { Text(it) } },
+        isError = isError,
+        supportingText = supportingText?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
