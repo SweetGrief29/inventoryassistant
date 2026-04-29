@@ -8,12 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tazfan.inventoryassistant.data.local.entity.Sale
 import com.tazfan.inventoryassistant.ui.theme.InventoryAssistantTheme
 import com.tazfan.inventoryassistant.ui.viewmodel.InventoryViewModel
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,23 +60,50 @@ fun ReportContent(
         ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1A))
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Total Laporan Keseluruhan", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Total Penjualan: Rp $totalRevenue")
-                    Text(text = "Total Modal: Rp $totalCost")
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    Text(
-                        text = "Total Untung: Rp $totalProfit",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(text = "Ringkasan Pendapatan", style = MaterialTheme.typography.titleMedium, color = Color.White)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    ReportRow("Total Penjualan", totalRevenue)
+                    ReportRow("Total Modal", totalCost)
+                    
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.5f))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Total Untung",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Rp ${String.format(Locale.GERMANY, "%,.0f", totalProfit)}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4CAF50)
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ReportRow(label: String, value: Double) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, color = Color.LightGray)
+        Text(text = "Rp ${String.format(Locale.GERMANY, "%,.0f", value)}", color = Color.White, fontWeight = FontWeight.Medium)
     }
 }
 

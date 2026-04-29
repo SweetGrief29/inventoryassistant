@@ -34,9 +34,22 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    fun insertItem(name: String, costPrice: Double, sellingPrice: Double, stock: Int) {
+    fun insertItem(name: String, category: String, costPrice: Double, sellingPrice: Double, stock: Int, imagePath: String? = null) {
         viewModelScope.launch {
-            repository.insertItem(Item(name = name, costPrice = costPrice, sellingPrice = sellingPrice, stock = stock))
+            repository.insertItem(Item(
+                name = name, 
+                category = category,
+                costPrice = costPrice, 
+                sellingPrice = sellingPrice, 
+                stock = stock,
+                imagePath = imagePath
+            ))
+        }
+    }
+
+    fun updateItem(item: Item) {
+        viewModelScope.launch {
+            repository.insertItem(item) // In Room, insert with same ID and OnConflictStrategy.REPLACE acts as update
         }
     }
 

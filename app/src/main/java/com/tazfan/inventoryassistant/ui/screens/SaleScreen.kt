@@ -126,8 +126,8 @@ fun SaleScreenPreview() {
     InventoryAssistantTheme {
         SaleContent(
             items = listOf(
-                Item(1, "Beras 5kg", 60000.0, 75000.0, 10),
-                Item(2, "Minyak Goreng 2L", 28000.0, 32000.0, 5)
+                Item(id = 1, name = "Beras 5kg", category = "Lainnya", imagePath = null, costPrice = 60000.0, sellingPrice = 75000.0, stock = 10),
+                Item(id = 2, name = "Minyak Goreng 2L", category = "Lainnya", imagePath = null, costPrice = 28000.0, sellingPrice = 32000.0, stock = 5)
             ),
             onProcessSale = { _, _ -> },
             onNavigateBack = {}

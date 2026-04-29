@@ -8,6 +8,8 @@ data class Item(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
+    val category: String = "",
+    val imagePath: String? = null,
     val costPrice: Double,
     val sellingPrice: Double,
     val stock: Int

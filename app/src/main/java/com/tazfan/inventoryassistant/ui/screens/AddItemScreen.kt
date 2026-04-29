@@ -1,18 +1,34 @@
 package com.tazfan.inventoryassistant.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.tazfan.inventoryassistant.ui.viewmodel.InventoryViewModel
-
-import androidx.compose.ui.tooling.preview.Preview
-import com.tazfan.inventoryassistant.ui.theme.InventoryAssistantTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,32 +36,33 @@ fun AddItemScreen(
     viewModel: InventoryViewModel,
     onNavigateBack: () -> Unit
 ) {
-    AddItemContent(
-        onSaveItem = { name, cost, sell, stock ->
-            viewModel.insertItem(name, cost, sell, stock)
-        },
-        onNavigateBack = onNavigateBack
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddItemContent(
-    onSaveItem: (String, Double, Double, Int) -> Unit,
-    onNavigateBack: () -> Unit
-) {
     var name by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("Makanan") }
     var costPrice by remember { mutableStateOf("") }
     var sellingPrice by remember { mutableStateOf("") }
-    var stock by remember { mutableStateOf("") }
+    var stock by remember { mutableStateOf("0") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    
+    var showCategoryDialog by remember { mutableStateOf(false) }
+    val categories = listOf("Makanan", "Minuman", "Lainnya")
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> imageUri = uri }
+    )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tambah Barang Baru") },
+                title = { Text("Tambah Barang", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "Back", 
+                            tint = Color(0xFF4CAF50),
+                            modifier = Modifier.size(30.dp)
+                        )
                     }
                 }
             )
@@ -55,64 +72,165 @@ fun AddItemContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nama Barang") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = costPrice,
-                onValueChange = { costPrice = it },
-                label = { Text("Harga Modal") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            OutlinedTextField(
-                value = sellingPrice,
-                onValueChange = { sellingPrice = it },
-                label = { Text("Harga Jual") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            OutlinedTextField(
-                value = stock,
-                onValueChange = { stock = it },
-                label = { Text("Stok Awal") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+            // Placeholder Image sesuai wireframe
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(16.dp))
+                    .clickable { 
+                        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                if (imageUri != null) {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.AddAPhoto, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(60.dp), 
+                        tint = Color(0xFFE0E0E0)
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            ModernTextField(label = "Nama Barang", value = name, onValueChange = { name = it })
+            
+            ModernCategoryPicker(label = "Kategori", value = category) {
+                showCategoryDialog = true
+            }
+
+            ModernTextField(label = "Harga Asli", value = costPrice, onValueChange = { costPrice = it }, prefix = "Rp", keyboardType = KeyboardType.Number)
+            
+            ModernTextField(label = "Harga Jual", value = sellingPrice, onValueChange = { sellingPrice = it }, prefix = "Rp", keyboardType = KeyboardType.Number)
+            
+            ModernTextField(label = "Stok Awal", value = stock, onValueChange = { stock = it }, keyboardType = KeyboardType.Number)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Button(
                 onClick = {
-                    if (name.isNotBlank() && costPrice.isNotBlank() && sellingPrice.isNotBlank() && stock.isNotBlank()) {
-                        onSaveItem(
-                            name,
-                            costPrice.toDoubleOrNull() ?: 0.0,
-                            sellingPrice.toDoubleOrNull() ?: 0.0,
-                            stock.toIntOrNull() ?: 0
+                    if (name.isNotBlank()) {
+                        viewModel.insertItem(
+                            name = name,
+                            category = category,
+                            costPrice = costPrice.toDoubleOrNull() ?: 0.0,
+                            sellingPrice = sellingPrice.toDoubleOrNull() ?: 0.0,
+                            stock = stock.toIntOrNull() ?: 0,
+                            imagePath = imageUri?.toString()
                         )
                         onNavigateBack()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
-                Text("Simpan")
+                Text("Simpan", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+
+    if (showCategoryDialog) {
+        AlertDialog(
+            onDismissRequest = { showCategoryDialog = false },
+            title = { Text("Pilih Kategori") },
+            text = {
+                Column {
+                    categories.forEach { cat ->
+                        Text(
+                            text = cat,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    category = cat
+                                    showCategoryDialog = false
+                                }
+                                .padding(16.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {}
+        )
+    }
+}
+
+@Composable
+fun InputRowItem(label: String, value: String, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(8.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4CAF50))
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = label, color = Color.Gray, fontSize = 14.sp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = value, color = Color.Black, fontSize = 14.sp)
+                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun AddItemScreenPreview() {
-    InventoryAssistantTheme {
-        AddItemContent(
-            onSaveItem = { _, _, _, _ -> },
-            onNavigateBack = {}
+fun ModernTextField(label: String, value: String, onValueChange: (String) -> Unit, prefix: String? = null, keyboardType: KeyboardType = KeyboardType.Text) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        prefix = prefix?.let { { Text(it) } },
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        shape = RoundedCornerShape(8.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(0xFF4CAF50),
+            unfocusedBorderColor = Color(0xFFE0E0E0)
         )
-    }
+    )
+}
+
+@Composable
+fun ModernCategoryPicker(label: String, value: String, onClick: () -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = {},
+        label = { Text(label) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        enabled = false,
+        readOnly = true,
+        trailingIcon = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+        shape = RoundedCornerShape(8.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            disabledBorderColor = Color(0xFFE0E0E0),
+            disabledTextColor = Color.Black,
+            disabledLabelColor = Color.Gray
+        )
+    )
 }

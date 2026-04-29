@@ -8,7 +8,7 @@ import com.tazfan.inventoryassistant.data.local.dao.InventoryDao
 import com.tazfan.inventoryassistant.data.local.entity.Item
 import com.tazfan.inventoryassistant.data.local.entity.Sale
 
-@Database(entities = [Item::class, Sale::class], version = 1, exportSchema = false)
+@Database(entities = [Item::class, Sale::class], version = 2, exportSchema = false)
 abstract class InventoryDatabase : RoomDatabase() {
     abstract fun inventoryDao(): InventoryDao
 

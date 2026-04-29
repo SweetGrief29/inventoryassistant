@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,17 +38,17 @@ fun ProfileScreen(
             // Header Toko
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1A))
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Store, contentDescription = null, modifier = Modifier.size(48.dp))
+                    Icon(Icons.Default.Store, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.White)
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
-                        Text(text = "Nama Toko Anda", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                        Text(text = "Admin Mode", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Toko Kelontong Berkah", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = "Admin Mode", style = MaterialTheme.typography.bodyMedium, color = Color.LightGray)
                     }
                 }
             }
