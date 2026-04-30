@@ -22,7 +22,6 @@ import com.tazfan.inventoryassistant.ui.theme.InventoryAssistantTheme
 @Composable
 fun ProfileScreen(
     onNavigateToItems: () -> Unit,
-    onNavigateToEditStock: () -> Unit,
     onNavigateToReport: () -> Unit
 ) {
     Scaffold(
@@ -57,15 +56,9 @@ fun ProfileScreen(
 
             // Tombol Manajemen
             ProfileMenuButton(
-                text = "Cek Stok Barang",
+                text = "Manajemen Stok & Harga",
                 icon = Icons.Default.Inventory,
                 onClick = onNavigateToItems
-            )
-            
-            ProfileMenuButton(
-                text = "Edit Stok & Tambah Barang",
-                icon = Icons.Default.Edit,
-                onClick = onNavigateToEditStock
             )
 
             ProfileMenuButton(
@@ -99,6 +92,6 @@ fun ProfileMenuButton(text: String, icon: ImageVector, onClick: () -> Unit) {
 @Composable
 fun ProfileScreenPreview() {
     InventoryAssistantTheme {
-        ProfileScreen({}, {}, {})
+        ProfileScreen({}, {})
     }
 }

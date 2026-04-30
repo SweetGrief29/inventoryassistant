@@ -36,14 +36,26 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun insertItem(name: String, category: String, costPrice: Double, sellingPrice: Double, stock: Int, imagePath: String? = null) {
         viewModelScope.launch {
-            repository.insertItem(Item(
-                name = name, 
-                category = category,
-                costPrice = costPrice, 
-                sellingPrice = sellingPrice, 
-                stock = stock,
-                imagePath = imagePath
-            ))
+            val existingItem = repository.getItemByName(name)
+            if (existingItem != null) {
+                // Jika barang sudah ada, update stok dan detail lainnya (opsional, di sini kita update semuanya)
+                repository.insertItem(existingItem.copy(
+                    category = category,
+                    costPrice = costPrice,
+                    sellingPrice = sellingPrice,
+                    stock = existingItem.stock + stock,
+                    imagePath = imagePath ?: existingItem.imagePath
+                ))
+            } else {
+                repository.insertItem(Item(
+                    name = name, 
+                    category = category,
+                    costPrice = costPrice, 
+                    sellingPrice = sellingPrice, 
+                    stock = stock,
+                    imagePath = imagePath
+                ))
+            }
         }
     }
 
@@ -56,6 +68,12 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
     fun updateStock(itemId: Int, quantity: Int) {
         viewModelScope.launch {
             repository.updateStock(itemId, quantity)
+        }
+    }
+
+    fun deleteItem(item: Item) {
+        viewModelScope.launch {
+            repository.deleteItem(item)
         }
     }
 

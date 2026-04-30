@@ -48,15 +48,18 @@ fun InventoryApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val showBottomBar = currentRoute in listOf("home", "sale", "history", "profile")
+
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 24.dp)
-                    .clip(RoundedCornerShape(50.dp)),
-                containerColor = Color(0xFF1B2E1A),
-                tonalElevation = 0.dp
-            ) {
+            if (showBottomBar) {
+                NavigationBar(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
+                        .clip(RoundedCornerShape(50.dp)),
+                    containerColor = Color(0xFF1B2E1A),
+                    tonalElevation = 0.dp
+                ) {
                 // Beranda
                 val homeSelected = currentRoute == "home"
                 NavigationBarItem(
@@ -154,7 +157,8 @@ fun InventoryApp() {
                 )
             }
         }
-    ) { innerPadding ->
+    }
+) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = "home",
@@ -180,7 +184,6 @@ fun InventoryApp() {
             composable("profile") {
                 ProfileScreen(
                     onNavigateToItems = { navController.navigate("items") },
-                    onNavigateToEditStock = { navController.navigate("edit_stock") },
                     onNavigateToReport = { navController.navigate("report") }
                 )
             }
@@ -192,21 +195,8 @@ fun InventoryApp() {
                     onNavigateToAddItem = { navController.navigate("add_item") }
                 )
             }
-            composable("edit_stock") {
-                EditStockScreen(
-                    onNavigateToAddItem = { navController.navigate("add_item") },
-                    onNavigateToUpdateStock = { navController.navigate("update_stock") },
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
             composable("add_item") {
                 AddItemScreen(
-                    viewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
-            composable("update_stock") {
-                UpdateStockScreen(
                     viewModel = viewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )

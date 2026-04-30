@@ -1,5 +1,7 @@
 package com.tazfan.inventoryassistant.ui.screens
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -149,13 +151,18 @@ fun AddItemScreen(
                         imageUri?.let { uri ->
                             try {
                                 val inputStream = context.contentResolver.openInputStream(uri)
+                                val bitmap = BitmapFactory.decodeStream(inputStream)
+                                
                                 val file = File(context.filesDir, "item_${System.currentTimeMillis()}.jpg")
                                 val outputStream = FileOutputStream(file)
-                                inputStream?.use { input ->
-                                    outputStream.use { output ->
-                                        input.copyTo(output)
-                                    }
-                                }
+                                
+                                // Kompresi ke JPEG dengan kualitas 70%
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
+                                
+                                outputStream.flush()
+                                outputStream.close()
+                                inputStream?.close()
+
                                 finalImagePath = file.absolutePath
                             } catch (e: Exception) {
                                 e.printStackTrace()

@@ -11,7 +11,11 @@ class InventoryRepository(private val inventoryDao: InventoryDao) {
 
     suspend fun insertItem(item: Item) = inventoryDao.insertItem(item)
     
+    suspend fun getItemByName(name: String): Item? = inventoryDao.getItemByName(name)
+    
     suspend fun updateStock(id: Int, quantity: Int) = inventoryDao.updateStock(id, quantity)
+    
+    suspend fun deleteItem(item: Item) = inventoryDao.deleteItem(item)
     
     suspend fun processSale(item: Item, quantity: Int) = inventoryDao.processSale(item, quantity)
     

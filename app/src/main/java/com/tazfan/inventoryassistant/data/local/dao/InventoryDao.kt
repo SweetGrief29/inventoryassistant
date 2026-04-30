@@ -14,8 +14,14 @@ interface InventoryDao {
     @Update
     suspend fun updateItem(item: Item)
 
+    @Delete
+    suspend fun deleteItem(item: Item)
+
     @Query("SELECT * FROM items ORDER BY name ASC")
     fun getAllItems(): Flow<List<Item>>
+
+    @Query("SELECT * FROM items WHERE name = :name LIMIT 1")
+    suspend fun getItemByName(name: String): Item?
 
     @Query("SELECT * FROM items WHERE id = :id")
     suspend fun getItemById(id: Int): Item?
