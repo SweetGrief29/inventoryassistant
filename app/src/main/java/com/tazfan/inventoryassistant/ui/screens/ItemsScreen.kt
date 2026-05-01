@@ -73,8 +73,12 @@ fun ItemsScreen(
         it.name.contains(searchQuery, ignoreCase = true)
     }
 
-    BackHandler(enabled = pendingChanges.isNotEmpty()) {
-        showExitConfirmation = true
+    BackHandler(enabled = currentFabMode != FabMode.NONE || pendingChanges.isNotEmpty()) {
+        if (pendingChanges.isNotEmpty()) {
+            showExitConfirmation = true
+        } else {
+            currentFabMode = FabMode.NONE
+        }
     }
 
     // Dialog Konfirmasi Hapus
@@ -133,7 +137,13 @@ fun ItemsScreen(
                 title = { Text("Stok Barang", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (pendingChanges.isNotEmpty()) showExitConfirmation = true else onNavigateBack()
+                        if (pendingChanges.isNotEmpty()) {
+                            showExitConfirmation = true
+                        } else if (currentFabMode != FabMode.NONE) {
+                            currentFabMode = FabMode.NONE
+                        } else {
+                            onNavigateBack()
+                        }
                     }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color(0xFF4CAF50))
                     }
@@ -144,11 +154,19 @@ fun ItemsScreen(
                             onClick = {
                                 pendingChanges.values.forEach { viewModel.updateItem(it) }
                                 pendingChanges.clear()
+                                currentFabMode = FabMode.NONE
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
                             Text("Simpan", color = Color.White)
+                        }
+                    } else if (currentFabMode != FabMode.NONE) {
+                        TextButton(
+                            onClick = { currentFabMode = FabMode.NONE },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Text("Selesai", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -372,22 +390,41 @@ fun ItemCard(
                     // Bagian Harga
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (mode == FabMode.UPDATE_PRICE) {
-                            var priceText by remember(item.sellingPrice) { mutableStateOf(item.sellingPrice.toString()) }
-                            BasicTextField(
-                                value = priceText,
-                                onValueChange = { 
-                                    priceText = it
-                                    it.toDoubleOrNull()?.let { newPrice -> onUpdatePrice(newPrice) }
-                                },
-                                textStyle = TextStyle(fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50), fontSize = 16.sp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                decorationBox = { innerTextField ->
-                                    Row {
-                                        Text("Rp ", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
-                                        innerTextField()
-                                    }
+                            var priceText by remember(item.sellingPrice) { 
+                                mutableStateOf(if (item.sellingPrice % 1 == 0.0) item.sellingPrice.toLong().toString() else item.sellingPrice.toString()) 
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFFF5F5F5), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color.Black)
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    BasicTextField(
+                                        value = priceText,
+                                        onValueChange = { 
+                                            if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                                                priceText = it
+                                                it.toDoubleOrNull()?.let { newPrice -> onUpdatePrice(newPrice) }
+                                            }
+                                        },
+                                        textStyle = TextStyle(
+                                            fontWeight = FontWeight.Bold, 
+                                            color = Color.Black, 
+                                            fontSize = 16.sp,
+                                            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                                        ),
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        decorationBox = { innerTextField ->
+                                            Row {
+                                                Text("Rp ", fontWeight = FontWeight.Bold, color = Color.Black)
+                                                innerTextField()
+                                            }
+                                        }
+                                    )
                                 }
-                            )
+                            }
                         } else {
                             Text(
                                 text = "Rp ${String.format(Locale.GERMANY, "%,.0f", item.sellingPrice)}", 
