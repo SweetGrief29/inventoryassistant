@@ -1,14 +1,17 @@
 package com.tazfan.inventoryassistant.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -39,21 +42,51 @@ fun HistoryContent(
 ) {
     val totalProfit = sales.sumOf { (it.sellingPrice - it.costPrice) * it.quantity }
 
-    Scaffold{ padding ->
-        Column(modifier = Modifier.padding(padding)) {
+    Scaffold(
+        containerColor = Color.White
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .statusBarsPadding()
+        ) {
+            // Header Custom
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black
+                    )
+                }
+                Text(
+                    text = "Riwayat Transaksi",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+
             // Ringkasan Keuntungan
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1A))
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF51BF55))
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Total Keuntungan", color = Color.White, fontSize = 14.sp)
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Total Keuntungan", color = Color.White.copy(alpha = 0.9f), fontSize = 14.sp)
                     Text(
                         text = "Rp ${String.format(Locale.GERMANY, "%,.0f", totalProfit)}",
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -62,13 +95,15 @@ fun HistoryContent(
             Text(
                 text = "Daftar Transaksi",
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Black
             )
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(sales) { sale ->
                     HistoryItemCard(sale)
@@ -84,22 +119,42 @@ fun HistoryItemCard(sale: Sale) {
     val dateString = sdf.format(Date(sale.timestamp))
     val profit = (sale.sellingPrice - sale.costPrice) * sale.quantity
     
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFF0F0F0)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = sale.itemName, fontWeight = FontWeight.Bold)
-                Text(text = "Profit: Rp ${String.format(Locale.GERMANY, "%,.0f", profit)}", color = Color(0xFF4CAF50))
+                Text(text = sale.itemName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    text = "+ Rp ${String.format(Locale.GERMANY, "%,.0f", profit)}", 
+                    color = Color(0xFF51BF55),
+                    fontWeight = FontWeight.Bold
+                )
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "${sale.quantity} pcs x Rp ${String.format(Locale.GERMANY, "%,.0f", sale.sellingPrice)}", style = MaterialTheme.typography.bodySmall)
-                Text(text = dateString, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = "${sale.quantity} pcs x Rp ${String.format(Locale.GERMANY, "%,.0f", sale.sellingPrice)}", 
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+                Text(
+                    text = dateString, 
+                    style = MaterialTheme.typography.bodySmall, 
+                    color = Color.LightGray
+                )
             }
         }
     }

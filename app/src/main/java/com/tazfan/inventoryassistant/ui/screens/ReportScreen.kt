@@ -1,17 +1,20 @@
 package com.tazfan.inventoryassistant.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tazfan.inventoryassistant.data.local.entity.Sale
 import com.tazfan.inventoryassistant.ui.theme.InventoryAssistantTheme
 import com.tazfan.inventoryassistant.ui.viewmodel.InventoryViewModel
@@ -41,52 +44,80 @@ fun ReportContent(
     val totalProfit = totalRevenue - totalCost
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Laporan Keuntungan") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
+        containerColor = Color.White
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
+                .statusBarsPadding()
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1A))
+            // Header Custom
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(text = "Ringkasan Pendapatan", style = MaterialTheme.typography.titleMedium, color = Color.White)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    ReportRow("Total Penjualan", totalRevenue)
-                    ReportRow("Total Modal", totalCost)
-                    
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.5f))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black
+                    )
+                }
+                Text(
+                    text = "Laporan Keuntungan",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2E1A)) // Keeping dark green for reports looks professional, but let's check if we should use brand green
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
                         Text(
-                            text = "Total Untung",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            text = "Ringkasan Pendapatan", 
+                            style = MaterialTheme.typography.titleMedium, 
+                            color = Color.White.copy(alpha = 0.7f)
                         )
-                        Text(
-                            text = "Rp ${String.format(Locale.GERMANY, "%,.0f", totalProfit)}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF4CAF50)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        ReportRow("Total Penjualan", totalRevenue)
+                        ReportRow("Total Modal", totalCost)
+                        
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 20.dp), 
+                            color = Color.White.copy(alpha = 0.1f)
                         )
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Total Untung",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Rp ${String.format(Locale.GERMANY, "%,.0f", totalProfit)}",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF51BF55)
+                            )
+                        }
                     }
                 }
             }

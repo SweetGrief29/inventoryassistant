@@ -80,7 +80,7 @@ fun ProfileMenuButton(text: String, icon: ImageVector, onClick: () -> Unit) {
             .height(40.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = Color(0xFF1B2E1A),
+            contentColor = Color(0xFF51BF55),
         ),
         border = BorderStroke(1.dp, Color(0xFF51BF55)),
         contentPadding = PaddingValues(horizontal = 16.dp)
@@ -92,7 +92,7 @@ fun ProfileMenuButton(text: String, icon: ImageVector, onClick: () -> Unit) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = Color(0xFF4CAF50),
+                tint = Color(0xFF51BF55),
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))

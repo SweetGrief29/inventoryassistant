@@ -133,9 +133,14 @@ fun ItemsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Stok Barang", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
+            // Header Custom (Manual Row instead of TopAppBar for consistency)
+            Column(modifier = Modifier.statusBarsPadding()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = {
                         if (pendingChanges.isNotEmpty()) {
                             showExitConfirmation = true
@@ -145,10 +150,19 @@ fun ItemsScreen(
                             onNavigateBack()
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color(0xFF4CAF50))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.Black
+                        )
                     }
-                },
-                actions = {
+                    Text(
+                        text = "Stok Barang",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.weight(1f)
+                    )
                     if (pendingChanges.isNotEmpty()) {
                         Button(
                             onClick = {
@@ -156,21 +170,22 @@ fun ItemsScreen(
                                 pendingChanges.clear()
                                 currentFabMode = FabMode.NONE
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                            modifier = Modifier.padding(end = 8.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF51BF55)),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                            modifier = Modifier.height(32.dp)
                         ) {
-                            Text("Simpan", color = Color.White)
+                            Text("Simpan", color = Color.White, fontSize = 12.sp)
                         }
                     } else if (currentFabMode != FabMode.NONE) {
                         TextButton(
-                            onClick = { currentFabMode = FabMode.NONE },
-                            modifier = Modifier.padding(end = 8.dp)
+                            onClick = { currentFabMode = FabMode.NONE }
                         ) {
-                            Text("Selesai", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+                            Text("Selesai", color = Color(0xFF51BF55), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
-            )
+            }
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
@@ -205,7 +220,7 @@ fun ItemsScreen(
                 
                 FloatingActionButton(
                     onClick = { fabExpanded = !fabExpanded },
-                    containerColor = if (fabExpanded) Color.White else Color(0xFF4CAF50),
+                    containerColor = if (fabExpanded) Color.White else Color(0xFF51BF55),
                     contentColor = if (fabExpanded) Color.Gray else Color.White,
                     shape = CircleShape
                 ) {
@@ -225,13 +240,15 @@ fun ItemsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Cari nama barang...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                placeholder = { Text("Cari nama barang...", color = Color.Gray) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black) },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4CAF50),
-                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                    focusedBorderColor = Color(0xFF51BF55),
+                    unfocusedBorderColor = Color(0xFF51BF55),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
                 )
             )
 
@@ -249,8 +266,15 @@ fun ItemsScreen(
                         onClick = { selectedCategory = category },
                         label = { Text(category) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(0xFF4CAF50),
-                            selectedLabelColor = Color.White
+                            selectedContainerColor = Color(0xFF51BF55),
+                            selectedLabelColor = Color.White,
+                            labelColor = Color(0xFF51BF55)
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = selectedCategory == category,
+                            borderColor = Color(0xFF51BF55),
+                            selectedBorderColor = Color(0xFF51BF55)
                         )
                     )
                 }
@@ -429,7 +453,7 @@ fun ItemCard(
                             Text(
                                 text = "Rp ${String.format(Locale.GERMANY, "%,.0f", item.sellingPrice)}", 
                                 fontWeight = FontWeight.Bold, 
-                                color = Color(0xFF4CAF50)
+                                color = Color(0xFF51BF55)
                             )
                         }
                     }
