@@ -6,10 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -55,10 +59,14 @@ fun InventoryApp() {
             if (showBottomBar) {
                 NavigationBar(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 24.dp)
+                        .padding(horizontal = 16.dp)
+                        .navigationBarsPadding()
+                        .padding(bottom = 8.dp)
+                        .height(56.dp)
                         .clip(RoundedCornerShape(50.dp)),
                     containerColor = Color(0xFF1B2E1A),
-                    tonalElevation = 0.dp
+                    tonalElevation = 0.dp,
+                    windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
                 // Beranda
                 val homeSelected = currentRoute == "home"
@@ -78,7 +86,6 @@ fun InventoryApp() {
                             )
                         }
                     },
-                    label = { Text("Beranda", color = if (homeSelected) Color.White else Color.Gray) },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent
                     )
@@ -102,7 +109,6 @@ fun InventoryApp() {
                             )
                         }
                     },
-                    label = { Text("Toko", color = if (saleSelected) Color.White else Color.Gray) },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent
                     )
@@ -126,7 +132,6 @@ fun InventoryApp() {
                             )
                         }
                     },
-                    label = { Text("Riwayat", color = if (historySelected) Color.White else Color.Gray) },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent
                     )
@@ -150,7 +155,6 @@ fun InventoryApp() {
                             )
                         }
                     },
-                    label = { Text("Profil", color = if (profileSelected) Color.White else Color.Gray) },
                     colors = NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent
                     )
@@ -162,12 +166,19 @@ fun InventoryApp() {
         NavHost(
             navController = navController,
             startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(
+                top = innerPadding.calculateTopPadding() / 4,
+                bottom = innerPadding.calculateBottomPadding()
+            )
         ) {
             composable("home") {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Selamat Datang")
-                }
+                HomeScreen(
+                    onNavigateToSale = { navController.navigate("sale") },
+                    onNavigateToItems = { navController.navigate("items") },
+                    onNavigateToEditStock = { navController.navigate("items") },
+                    onNavigateToHistory = { navController.navigate("history") },
+                    onNavigateToReport = { navController.navigate("report") }
+                )
             }
             composable("sale") {
                 SaleScreen(

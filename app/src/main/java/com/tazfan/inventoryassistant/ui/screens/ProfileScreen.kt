@@ -1,6 +1,8 @@
 package com.tazfan.inventoryassistant.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -18,21 +20,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tazfan.inventoryassistant.ui.theme.InventoryAssistantTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onNavigateToItems: () -> Unit,
     onNavigateToReport: () -> Unit
 ) {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Profil & Manajemen") }) }
-    ) { padding ->
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Header Toko
             Card(
@@ -52,7 +51,7 @@ fun ProfileScreen(
                 }
             }
 
-            Text(text = "Manajemen Inventaris", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Tombol Manajemen
             ProfileMenuButton(
@@ -70,20 +69,38 @@ fun ProfileScreen(
     }
 }
 
+
+
 @Composable
 fun ProfileMenuButton(text: String, icon: ImageVector, onClick: () -> Unit) {
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().height(60.dp),
-        shape = MaterialTheme.shapes.medium
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = Color(0xFF1B2E1A),
+        ),
+        border = BorderStroke(1.dp, Color(0xFF51BF55)),
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = text)
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = Color(0xFF4CAF50),
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = text,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

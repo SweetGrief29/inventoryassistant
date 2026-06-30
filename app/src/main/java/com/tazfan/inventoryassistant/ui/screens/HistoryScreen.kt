@@ -39,18 +39,7 @@ fun HistoryContent(
 ) {
     val totalProfit = sales.sumOf { (it.sellingPrice - it.costPrice) * it.quantity }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Riwayat & Keuntungan") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold{ padding ->
         Column(modifier = Modifier.padding(padding)) {
             // Ringkasan Keuntungan
             Card(
@@ -64,7 +53,7 @@ fun HistoryContent(
                     Text(
                         text = "Rp ${String.format(Locale.GERMANY, "%,.0f", totalProfit)}",
                         color = Color.White,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
